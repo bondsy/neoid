@@ -4,7 +4,7 @@ module Neoid
       attr_reader :neoid_config
       
       def neoid_config
-        @neoid_config ||= Neoid::ModelConfig.new(self)
+        @neoid_config ||= (base_class == self ? Neoid::ModelConfig.new(self) : base_class.neoid_config)
       end
       
       def neoidable(options = {})

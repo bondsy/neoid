@@ -237,3 +237,5 @@ module Neoid
       end
   end
 end
+
+require 'neoid/implicit_relationship'

@@ -32,16 +32,20 @@ module Neoid
         relationship
       end
       
+      def neo_relationship_options
+        self.class.neoid_config.relationship_options
+      end
+      
       def _neo_save
         return unless Neoid.enabled?
         
-        options = self.class.neoid_config.relationship_options
+        options = neo_relationship_options
         
         start_item = self.send(options[:start_node])
         end_item = self.send(options[:end_node])
         
         return unless start_item && end_item
-
+        
         # initialize nodes
         start_item.neo_node
         end_item.neo_node
@@ -119,6 +123,7 @@ module Neoid
     def self.initialize_relationship(rel_model)
       rel_model.reflect_on_all_associations(:belongs_to).each do |belongs_to|
         return if belongs_to.options[:polymorphic]
+        return unless belongs_to.klass <= ActiveRecord::Base
 
         # e.g. all has_many on User class
         all_has_many = belongs_to.klass.reflect_on_all_associations(:has_many)

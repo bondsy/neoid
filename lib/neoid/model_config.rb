@@ -14,12 +14,28 @@ module Neoid
       @stored_fields ||= {}
     end
     
+    def implicit_relationships
+      @implicit_relationships ||= {}
+    end
+    
     def field(name, &block)
       self.stored_fields[name] = block
     end
     
     def relationship(options)
       @relationship_options = options
+    end
+    
+    def has_many(name, options)
+      self.implicit_relationships[name] = options
+    end
+    
+    def has_one(name, options)
+      self.implicit_relationships[name] = options
+    end
+    
+    def belongs_to(name, options)
+      self.implicit_relationships[name] = options.merge(inbound: true)
     end
     
     def search(&block)

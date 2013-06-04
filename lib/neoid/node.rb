@@ -142,8 +142,28 @@ module Neoid
         end.then do |result|
           neo_search_index
         end
-
+        
+        neo_save_implicit_relationships
+        
         node
+      end
+      
+      def neo_save_implicit_relationships
+        self.class.neoid_config.implicit_relationships.each do |name, options|
+          if options[:inbound]
+            self.send(name).neo_save_outbound_implicit_relationship(options[:inverse_of], options)
+          else
+            neo_save_outbound_implicit_relationship name, options
+          end
+        end
+      end
+      
+      def neo_save_outbound_implicit_relationship(name, options)
+        end_nodes = self.send(name)
+        end_nodes = [end_nodes] unless end_nodes.respond_to?(:each)
+        end_nodes.each do |end_node|
+          Neoid::ImplicitRelationship.new(self, end_node, options.merge(start_node: :start_node, end_node: :end_node)).neo_save
+        end
       end
 
       def neo_search_index
