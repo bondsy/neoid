@@ -151,7 +151,9 @@ module Neoid
       def neo_save_implicit_relationships
         self.class.neoid_config.implicit_relationships.each do |name, options|
           if options[:inbound]
-            self.send(name).neo_save_outbound_implicit_relationship(options[:inverse_of], options, self)
+            unless self.send(name).nil?
+              self.send(name).neo_save_outbound_implicit_relationship(options[:inverse_of], options, self)
+            end
           else
             neo_save_outbound_implicit_relationship name, options
           end
